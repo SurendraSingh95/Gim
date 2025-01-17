@@ -1,6 +1,8 @@
 import 'package:fitness/Controllers/Question%20Controller/question_controller.dart';
 import 'package:fitness/Model/get_question_model.dart';
 import 'package:fitness/PurChaseProgram/StartNowSecond.dart';
+import 'package:fitness/Screens/select_trainer_screen.dart';
+import 'package:fitness/Utils/utils.dart';
 import 'package:fitness/colors.dart';
 import 'package:fitness/custom/CustomButton.dart';
 import 'package:fitness/custom/CustomText.dart';
@@ -8,10 +10,10 @@ import 'package:fitness/custom/Fonts.dart';
 import 'package:fitness/custom/my_shimmer.dart';
 import 'package:fitness/score/ScoreScreen.dart';
 import 'package:fitness/utils/Demo_Localization.dart';
+import 'package:fitness/utils/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 
 class QuestionAnswerScreen extends StatefulWidget {
   const QuestionAnswerScreen({super.key});
@@ -20,8 +22,7 @@ class QuestionAnswerScreen extends StatefulWidget {
   _QuestionAnswerScreenState createState() => _QuestionAnswerScreenState();
 }
 
-
- /// normal code
+/// normal code
 // class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
 //   final PageController _pageController = PageController(initialPage: 0);
 //   final QuestionController questionController = Get.put(QuestionController());
@@ -255,15 +256,16 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
   @override
   void initState() {
     super.initState();
-   init();
+    init();
   }
-  init() async{
+
+  init() async {
     await questionController.getQuestionApi();
-   if( questionController.questionList.isNotEmpty){
-     for(var q in questionController.questionList){
-       selectedValues['${q.id}'] = -1;
-     }
-   }
+    if (questionController.questionList.isNotEmpty) {
+      for (var q in questionController.questionList) {
+        selectedValues['${q.id}'] = -1;
+      }
+    }
   }
 
   Map<String, int> selectedValues = {};
@@ -390,7 +392,7 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child:   ListView(
+      child: ListView(
         children: [
           // Question text
           Card(
@@ -405,13 +407,20 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
             elevation: 4,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              child: CustomText2(text: question.cateName ?? "", fontSize: 5, fontFamily: Fonts.arial),
+              child: CustomText2(
+                  text: question.cateName ?? "",
+                  fontSize: 5,
+                  fontFamily: Fonts.arial),
             ),
           ),
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-            child: CustomText(text: question.questionText ?? "", fontSize: 5, fontFamily: Fonts.arial, color: FitnessColor.white),
+            child: CustomText(
+                text: question.questionText ?? "",
+                fontSize: 5,
+                fontFamily: Fonts.arial,
+                color: FitnessColor.white),
           ),
           ...question.answers.asMap().entries.map((entry) {
             Answer answer = entry.value;
@@ -429,77 +438,85 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
               ),
               elevation: 4,
               child: SizedBox(
-                height: answer.value.image == null || answer.value.image.isEmpty
-                    ? screenSize.height * 0.08
-                    : screenSize.height * 0.15,
-                child: InkWell(
-                  onTap: () {
-                    if (answer.key != null) {
-                      setState(() {
-                        selectedValues['${question.id}'] = answer.key!;
-                      });
-                    }
-                    print("Selected Values: ${selectedValues.values.join(',')}");
-                    print("Selected Values for question ${question.id}: ${selectedValues['${question.id}']}");
-                  },
-                  child: Row(
-                    children: [
-                      if (answer.value!.icon != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Image.network(
-                            "https://tfbfitness.com/${answer.value!.icon}",
-                            height: 35, width: 35,
-                            fit: BoxFit.contain,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return const CupertinoActivityIndicator(color: FitnessColor.white,);
-                              }
-                            },
+                  height:
+                      answer.value.image == null || answer.value.image.isEmpty
+                          ? screenSize.height * 0.08
+                          : screenSize.height * 0.15,
+                  child: InkWell(
+                    onTap: () {
+                      if (answer.key != null) {
+                        setState(() {
+                          selectedValues['${question.id}'] = answer.key!;
+                          selectedValues['${question.id}'] = answer.key!;
+                        });
+                      }
+                      print(
+                          "Selected Values: ${selectedValues.values.join(',')}");
+                      print(
+                          "Selected Values for question ${question.id}: ${selectedValues['${question.id}']}");
+                    },
+                    child: Row(
+                      children: [
+                        if (answer.value!.icon != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Image.network(
+                              "https://tfbfitness.com/${answer.value!.icon}",
+                              height: 35,
+                              width: 35,
+                              fit: BoxFit.contain,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return const CupertinoActivityIndicator(
+                                    color: FitnessColor.white,
+                                  );
+                                }
+                              },
+                            ),
                           ),
-                        ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: CustomText2(
-                            text: answer.value!.answer ?? '',
-                            fontSize: 4.5,
-                            fontFamily: Fonts.arial,
-                            color: FitnessColor.white,
-                          ),
-                        ),
-                      ),
-                      if (answer.value!.image != null)
-                        SizedBox(
-                          width: screenSize.width * 0.30,
-                          height: screenSize.height * 0.35,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 0),
-                              child: Image.network(
-                                "https://tfbfitness.com/${answer.value!.image}",
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  } else {
-                                    return   const CupertinoActivityIndicator(color: FitnessColor.white,);
-                                  }
-                                },
-                              ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: CustomText2(
+                              text: answer.value!.answer ?? '',
+                              fontSize: 4.5,
+                              fontFamily: Fonts.arial,
+                              color: FitnessColor.white,
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                )
-
-              ),
+                        if (answer.value!.image != null)
+                          SizedBox(
+                            width: screenSize.width * 0.30,
+                            height: screenSize.height * 0.35,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 0),
+                                child: Image.network(
+                                  "https://tfbfitness.com/${answer.value!.image}",
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    } else {
+                                      return const CupertinoActivityIndicator(
+                                        color: FitnessColor.white,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  )),
             );
-
           }).toList(),
         ],
       ),
@@ -514,8 +531,8 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
         children: [
           if (currentPage > 0)
             CustomButton(
-              height: 30,
-              width: 50,
+              height: 40,
+              width: 55,
               text: DemoLocalization.of(context)!.translate('Back').toString(),
               onPressed: () {
                 setState(() {
@@ -528,38 +545,47 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
               },
               fontFamily: Fonts.arial,
             ),
-
           if (currentPage < questionController.questionList.length - 1)
             CustomButton(
-              height: 30,
-              width: 50,
-              text:  DemoLocalization.of(context)!.translate('Next').toString(),
+              height: 40,
+              width: 55,
+              text: DemoLocalization.of(context)!.translate('Next').toString(),
               onPressed: () {
-                setState(() {
-                  currentPage++;
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.ease,
-                  );
-                });
+                if (selectedValues[
+                        '${questionController.questionList[currentPage].id}'] !=
+                    -1) {
+                  setState(() {
+                    currentPage++;
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+                  });
+                } else {
+                  Utils.mySnackBar(
+                      title: 'Not Answered!', msg: 'Please select a answer');
+                }
               },
               fontFamily: Fonts.arial,
             ),
-
           if (currentPage == questionController.questionList.length - 1)
             CustomButton(
-              height: 30,
+              height: 40,
               width: 60,
-              text: DemoLocalization.of(context)!.translate('Finish').toString(),
+              text:
+                  DemoLocalization.of(context)!.translate('Finish').toString(),
               onPressed: () {
+                if (selectedValues['${questionController.questionList[currentPage].id}'] != -1) {
+                  // Get.to(() => const StartNowSecond());
+                 // Get.to(() => const ExactScoreTableUI());
+                  SharedPref.setQuestionPrefs("25");
+                  Get.to(() => const SelectTrainerScreen(questionId: "25"));
 
-
-               // Get.to(() => const StartNowSecond());
-                Get.to(() => const ExactScoreTableUI());
-                //Get.to(() => const ScoreTableScreen());
-
-                //Get.to(() =>  HomeScreen(questionId: selectedValues.values.join(','),));
-
+                  //Get.to(() =>  HomeScreen(questionId: selectedValues.values.join(','),));
+                }else{
+                  Utils.mySnackBar(
+                      title: 'Not Answered!', msg: 'Please select a answer');
+                }
               },
               fontFamily: Fonts.arial,
             ),
@@ -581,7 +607,8 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
       child: Scaffold(
         backgroundColor: isDarkMode ? FitnessColor.primary : FitnessColor.white,
         appBar: AppBar(
-          backgroundColor: isDarkMode ? FitnessColor.primary : FitnessColor.white,
+          backgroundColor:
+              isDarkMode ? FitnessColor.primary : FitnessColor.white,
           centerTitle: true,
           leading: InkWell(
               onTap: () {
@@ -589,7 +616,9 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
               },
               child: const Icon(Icons.arrow_back_ios_new_sharp)),
           title: CustomText1(
-            text: DemoLocalization.of(context)!.translate('Question/Answer').toString(),
+            text: DemoLocalization.of(context)!
+                .translate('Question/Answer')
+                .toString(),
             fontSize: 5,
             fontFamily: Fonts.arial,
             fontWeight: FontWeight.bold,
@@ -603,7 +632,9 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
           if (questionController.questionList.isEmpty) {
             return Center(
               child: CustomText1(
-                text: DemoLocalization.of(context)!.translate('No_data_found').toString(),
+                text: DemoLocalization.of(context)!
+                    .translate('No_data_found')
+                    .toString(),
                 fontSize: 4,
                 fontFamily: Fonts.arial,
               ),
@@ -614,17 +645,20 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
             children: [
               // Page Progress Indicator
               Padding(
-                padding:  const EdgeInsets.symmetric(horizontal: 22,vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
                 child: LinearProgressIndicator(
-                  value: (currentPage + 1) / questionController.questionList.length,
-                  backgroundColor: isDarkMode ? Colors.grey :Colors.grey[300],
-                  color:isDarkMode ? FitnessColor.white :FitnessColor.primary,
+                  value: (currentPage + 1) /
+                      questionController.questionList.length,
+                  backgroundColor: isDarkMode ? Colors.grey : Colors.grey[300],
+                  color: isDarkMode ? FitnessColor.white : FitnessColor.primary,
                 ),
               ),
 
               // Page Number Indicator
               CustomText1(
-                text: '${currentPage + 1} / ${questionController.questionList.length}',
+                text:
+                    '${currentPage + 1} / ${questionController.questionList.length}',
                 fontSize: 4,
                 fontFamily: Fonts.arial,
                 fontWeight: FontWeight.bold,
@@ -635,15 +669,15 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: questionController.questionList.length,
+                  physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (int page) {
                     setState(() {
                       currentPage = page;
                     });
                   },
                   itemBuilder: (context, index) {
-                    return
-                    _buildPageContent(questionController.questionList[index]);
-
+                    return _buildPageContent(
+                        questionController.questionList[index]);
                   },
                 ),
               ),
@@ -657,11 +691,3 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
     );
   }
 }
-
-
-
-
-
-
-
-

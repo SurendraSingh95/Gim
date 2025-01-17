@@ -28,6 +28,7 @@ class TrainerList {
     required this.type,
     required this.videos,
     required this.profileImage,
+    required this.questionId,
     required this.createdAt,
     required this.updatedAt,
     required this.lang,
@@ -40,6 +41,7 @@ class TrainerList {
   final String? type;
   final List<String> videos;
   final String? profileImage;
+  final String? questionId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? lang;
@@ -53,6 +55,7 @@ class TrainerList {
       type: json["type"],
       videos: json["videos"] == null ? [] : List<String>.from(json["videos"]!.map((x) => x)),
       profileImage: json["profile_image"],
+      questionId: json["question_id"],
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
       lang: json["lang"],

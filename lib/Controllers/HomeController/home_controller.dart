@@ -89,7 +89,6 @@ class HomeController extends GetxController {
 
    ///get profile  api
    getProfileApi() async {
-      print("------Surendra-----------------");
       isLoadingProfile.value = true;
       try {
          dynamic response = await apiBaseHelper.postAPICall(Uri.parse(profileURl),langCode:languageCode.toString() , {"user_id":userId.toString()});
@@ -125,9 +124,10 @@ class HomeController extends GetxController {
    ///get trainer all video
    getVideoList(String? planId) async {
     isLoadingVideo.value = true;
-      dynamic response = await apiBaseHelper.postAPICall(Uri.parse(getVideoURL),langCode:languageCode.toString(),{"plan_id":planId});
+      dynamic response = await apiBaseHelper.postAPICall(Uri.parse(getVideoURL),langCode:languageCode.toString(),{"plan_id":planId.toString()});
       trainerVideoList.value = GetTrainerVideoListModel.fromJson(response).data;
       isLoadingVideo.value = false;
+      print("------Surendra-------${planId}----------");
 
    }
 

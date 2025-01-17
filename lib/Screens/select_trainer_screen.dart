@@ -14,8 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SelectTrainerScreen extends StatefulWidget {
-  const SelectTrainerScreen({Key? key}) : super(key: key);
-
+  const SelectTrainerScreen({Key? key,this.questionId}) : super(key: key);
+  final String ? questionId;
   @override
   State<SelectTrainerScreen> createState() => _SelectTrainerScreenState();
 }
@@ -28,10 +28,11 @@ class _SelectTrainerScreenState extends State<SelectTrainerScreen> {
   @override
   void initState() {
     super.initState();
+    questionController.getTrainerApi(widget.questionId);
     get();
   }
   get() async {
-    await questionController.getTrainerApi();
+    await questionController.getTrainerApi(widget.questionId);
   }
 
   @override
@@ -40,7 +41,7 @@ class _SelectTrainerScreenState extends State<SelectTrainerScreen> {
 
     return RefreshIndicator(
       onRefresh: () async{
-        questionController.getTrainerApi();
+        questionController.getTrainerApi(widget.questionId);
         setState(() {
 
         });
@@ -191,16 +192,17 @@ class _SelectTrainerScreenState extends State<SelectTrainerScreen> {
                             color: FitnessColor.white,
                             child: Column(
                               children: [
+                                SizedBox(height: 10),
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(15),
                                   child: Container(
-                                    width: double.infinity,
-                                    height: 120,
+                                    width: 120,
+                                    height: 110,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
                                       image: DecorationImage(
                                         image: NetworkImage(item.profileImage ?? ""),
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.contain,
                                         onError: (error, stackTrace) => AssetImage('assets/default_image.png'),
                                       ),
                                     ),
@@ -209,7 +211,7 @@ class _SelectTrainerScreenState extends State<SelectTrainerScreen> {
                                         : null,
                                   ),
                                 ),
-                                SizedBox(height: 5),
+                                SizedBox(height: 0),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: CustomText1(

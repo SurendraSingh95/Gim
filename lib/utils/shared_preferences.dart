@@ -1,5 +1,6 @@
 // Package imports:
 
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref {
@@ -32,6 +33,9 @@ class SharedPref {
 
   static setTrainerIdPrefs(String trainerId) async {
     prefs?.setString('trainerId', trainerId);
+  }
+  static setQuestionPrefs(String questionId) async {
+    prefs?.setString('questionId', questionId);
   }
 
   static setTrainerImagePrefs(String trainerImage) async {
@@ -86,6 +90,7 @@ class SharedPref {
   /// get Language Code
   static String getLanguageToPrefs()  {
     String? languageCode = prefs!.getString("languageCode");
+    debugPrint("language code $languageCode");
     return languageCode ?? "en";
   }
 
@@ -112,6 +117,11 @@ class SharedPref {
   static String getUserLoginId() {
     String? userLoginId = prefs!.getString("userLogin");
     return userLoginId ?? "";
+  }
+
+  static String getQuestionPrefs() {
+    String? questionId = prefs!.getString("questionId");
+    return questionId ?? "";
   }
 
   ///get cart item count

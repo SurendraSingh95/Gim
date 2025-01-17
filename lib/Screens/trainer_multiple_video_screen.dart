@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 import '../Controllers/HomeController/home_controller.dart';
-import '../auth/sign_out_screen.dart';
 import '../colors.dart';
 import '../custom/CstAppbarWithtextimage.dart';
 import '../custom/CustomText.dart';
@@ -30,18 +29,44 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
   void initState() {
     super.initState();
     _controllers = [];
-   // homeController.getVideoList(widget.planId.toString());
+    homeController.getVideoList(widget.planId.toString());
     _initializeVideos();
   }
 
+// _initializeVideos  _initializeVideos() async {
+//     await homeController.getVideoList(widget.planId.toString());
+//     setState(() {
+//       for (var item in homeController.trainerVideoList.value) {
+//         for (var videoUrl in item.videos.first.videoPath) {
+//           if (videoUrl.isNotEmpty) {
+//             try {
+//               final controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+//                 ..initialize().then((_) {
+//                   setState(() {});
+//                 }).catchError((error) {
+//                   print("Error initializing video: $error");
+//                 });
+//               _controllers.add(controller);
+//             } catch (e) {
+//               print("Error parsing video URL: $videoUrl -> $e");
+//             }
+//           } else {
+//             print("Invalid video URL: $videoUrl");
+//           }
+//         }
+//       }
+//     });
+//   }
   _initializeVideos() async {
+    print("------Surendra-----------------");
     await homeController.getVideoList(widget.planId.toString());
     setState(() {
       for (var item in homeController.trainerVideoList.value) {
-        for (var videoUrl in item.videos) {
-          if (videoUrl.isNotEmpty) {
+        for (var video in item.videos) {
+          final videoUrl = video.videoPath;
+          if (videoUrl != null && videoUrl.isNotEmpty) {
             try {
-              final controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+              final controller =  VideoPlayerController.networkUrl(Uri.parse(videoUrl))
                 ..initialize().then((_) {
                   setState(() {});
                 }).catchError((error) {
@@ -71,7 +96,6 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: isDarkMode ? FitnessColor.primary : FitnessColor.white,
       body: SingleChildScrollView(
@@ -94,7 +118,7 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
               Obx(() {
                 return homeController.isLoadingVideo.value
                     ? myShimmer()
-                    : homeController.videoPlanList.isEmpty || homeController.videoPlanList == []
+                    : homeController.trainerVideoList.first.videos.isEmpty || homeController.trainerVideoList.first.videos == []
                     ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
@@ -106,16 +130,15 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
                     ),
                   ),
                 )
-                    : ListView.builder(
+                    :ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: homeController.videoPlanList.length,
+                  itemCount: homeController.trainerVideoList.first.videos.length,
                   itemBuilder: (context, index) {
-                    final item = homeController.videoPlanList[index];
+                    final item = homeController.trainerVideoList[index];
                     final controller = _controllers.length > index
                         ? _controllers[index]
                         : null;
-
                     return  Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -123,10 +146,12 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
                         ValueListenableBuilder(
                             valueListenable : controller!,
                             builder: (_,value,child) {
+                             debugPrint("valueeeee ${value.duration}, ${value.position}");
+                              final minutes = value.position.inMinutes;
+                              if(minutes == int.tryParse(item.videos))
                               return Stack(
                                 alignment: Alignment.center,
                                 children: [
-
                                   Stack(
                                     alignment: Alignment.center,
                                     children: [
@@ -161,8 +186,8 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
                                           child: CupertinoActivityIndicator(),
                                         )
                                       else
-                                        // item.questionId == null ||  item.questionId!.isEmpty ?
-                                        // const Icon(Icons.lock,color: FitnessColor.white,) :
+                                      // item.questionId == null ||  item.questionId!.isEmpty ?
+                                      // const Icon(Icons.lock,color: FitnessColor.white,) :
                                         Positioned(
                                           bottom: 0,
                                           left: 0,
@@ -219,9 +244,6 @@ class _TrainerMultipleVideoScreeState extends State<TrainerMultipleVideoScree> {
                               );
                             }
                         ),
-
-
-
                       ],
                     );
                   },

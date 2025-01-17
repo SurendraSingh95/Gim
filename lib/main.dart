@@ -34,7 +34,7 @@ void main() async {
 
   NetworkConnectivityService();
   await SharedPref.getInstance();
-  SharedPref.setLanguageToPrefs('ar');
+  SharedPref.setLanguageToPrefs('en');
 
   Get.put(ThemeController());
 

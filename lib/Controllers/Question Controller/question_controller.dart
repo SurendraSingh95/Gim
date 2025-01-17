@@ -21,6 +21,7 @@ class QuestionController extends GetxController {
    /// get user id
    String get _userId => SharedPref.getUserId();
    String get languageCode => SharedPref.getLanguageToPrefs();
+   String get questionId => SharedPref.getQuestionPrefs();
    String get userId => _userId;
 
    ///declaration of variables
@@ -51,19 +52,27 @@ class QuestionController extends GetxController {
 
 
    ///get trainer list
-   getTrainerApi() async {
-    await Future.delayed(Duration.zero);
-      try {
-        isLoading.value = true;
-        dynamic response = await apiBaseHelper.getAPICall(Uri.parse(getTrainerURL),langCode:languageCode.toString());
-        trainerList.value = GetTrainerModel.fromJson(response).data;
-        print("sdadadas${trainerList.value.first.title}");
-      } on Exception catch (e) {
-         print("axssadas$e");
-      }
-
-      isLoading.value = false;
+   getTrainerApi(String? questionId) async {
+     isLoading.value = true;
+     dynamic response = await apiBaseHelper.postAPICall(Uri.parse(getTrainerURL),langCode:languageCode.toString(),{"question_id":questionId});
+     trainerList.value = GetTrainerModel.fromJson(response).data;
+     isLoading.value = false;
+     print("sdadadas${trainerList.value.first.title}");
+     print("sdadadas${questionId}");
    }
+   // getTrainerApi() async {
+   //  await Future.delayed(Duration.zero);
+   //    try {
+   //      isLoading.value = true;
+   //      dynamic response = await apiBaseHelper.getAPICall(Uri.parse(getTrainerURL),langCode:languageCode.toString());
+   //      trainerList.value = GetTrainerModel.fromJson(response).data;
+   //      print("sdadadas${trainerList.value.first.title}");
+   //    } on Exception catch (e) {
+   //       print("axssadas$e");
+   //    }
+   //
+   //    isLoading.value = false;
+   // }
 
 
    @override
