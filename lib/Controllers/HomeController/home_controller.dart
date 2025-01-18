@@ -66,6 +66,8 @@ class HomeController extends GetxController {
    String get uploadProfileImageURL => apiServices.uploadProfile;
    String get getPlanURL => apiServices.gePlan;
    String get getVideoURL => apiServices.geVideo;
+   String get updateVideoStatusURL => apiServices.updateVideoStatus;
+   String get updateVideoAnswerStatusURL => apiServices.updateVideoAnswerStatus;
    String get purchasePlanURL => apiServices.purchasePlan;
    String get deleteAccountURL => apiServices.deleteAccount;
    String get homeDetailsURL => apiServices.homeDetails;
@@ -120,16 +122,29 @@ class HomeController extends GetxController {
       planData.value = GetMemberShipPlanModel.fromJson(response).data;
       isLoading.value = false;
    }
-
    ///get trainer all video
    getVideoList(String? planId) async {
-    isLoadingVideo.value = true;
-      dynamic response = await apiBaseHelper.postAPICall(Uri.parse(getVideoURL),langCode:languageCode.toString(),{"plan_id":planId.toString()});
-      trainerVideoList.value = GetTrainerVideoListModel.fromJson(response).data;
+      isLoadingVideo.value = true;
+      dynamic response = await apiBaseHelper.postAPICall(
+          Uri.parse(getVideoURL), langCode: languageCode.toString(),
+          {"plan_id": planId.toString()});
+      trainerVideoList.value = GetTrainerVideoListModel
+          .fromJson(response)
+          .data;
       isLoadingVideo.value = false;
       print("------Surendra-------${planId}----------");
-
    }
+    Future<bool> updateVideoAnswerStatus(String? videoAnswerId) async {
+       dynamic response = await apiBaseHelper.postAPICall(Uri.parse(updateVideoAnswerStatusURL),langCode:languageCode.toString(),{"id":videoAnswerId.toString()});
+       return response['success']??false;
+    }
+    Future<bool> updateVideoStatus(String? videoId, String? planId) async {
+       dynamic response = await apiBaseHelper.postAPICall(Uri.parse(updateVideoStatusURL),langCode:languageCode.toString(),{"id":videoId.toString()});
+       if(response['success']??false){
+          getVideoList(planId);
+       }
+       return response['success']??false;
+    }
 
    /// update Profile image Api
    uploadProfileApi(image) async {

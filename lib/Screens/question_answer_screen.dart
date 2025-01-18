@@ -270,121 +270,7 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
 
   Map<String, int> selectedValues = {};
 
-  /// Build Page Content for Each Question
-  // Widget _buildPageContent(QuestionList question) {
-  //   bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-  //
-  //   final Size screenSize = MediaQuery.of(context).size;
-  //
-  //   return Padding(
-  //     padding: const EdgeInsets.all(16.0),
-  //     child: ListView(
-  //       //crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         // Question text
-  //         Card(
-  //           color: FitnessColor.colorsociallogintext,
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(10.0),
-  //             side: const  BorderSide(
-  //               width: 2,
-  //               color:  FitnessColor.colorsociallogintext,
-  //             ),
-  //           ),
-  //           elevation: 4,
-  //           child:Padding(
-  //             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
-  //             child: CustomText2(text: question.cateName ?? "", fontSize: 5,fontFamily: Fonts.arial,),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 10,),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
-  //           child: CustomText(text: question.questionText ?? "", fontSize: 4.5,fontFamily: Fonts.arial,color: FitnessColor.white),
-  //         ),
-  //
-  //         ...question.answers.asMap().entries.map((entry) {
-  //
-  //           Answer answer = entry.value;
-  //           return Card(
-  //             color: FitnessColor.primary,
-  //             margin: const EdgeInsets.symmetric(vertical: 8.0),
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(15.0),
-  //               side: BorderSide(
-  //                 width: 2,
-  //                 color: selectedValues['${question.id}'] == answer.key
-  //                     ? Colors.red
-  //                     : FitnessColor.colorsociallogintext,
-  //               ),
-  //             ),
-  //             elevation: 4,
-  //             child: SizedBox(
-  //               height: screenSize.height * 0.17,
-  //               child: InkWell(
-  //                 onTap: () {
-  //
-  //                    if(answer.key != null) {
-  //
-  //                       setState(() {
-  //                         selectedValues['${question.id}'] = answer.key!;
-  //                       });
-  //
-  //                   }
-  //
-  //                   print("Selected Values: ${selectedValues.values.join(',')}");
-  //                   print("Selected Values: $entry}");
-  //                 },
-  //                 child: Row(
-  //                   // mainAxisAlignment: MainAxisAlignment.end,
-  //                   children: [
-  //                     Expanded(
-  //                       child: Padding(
-  //                         padding: const EdgeInsets.symmetric(horizontal: 10),
-  //                         child: CustomText2(
-  //                           text: answer.value!.answer ??'' ,
-  //                           fontSize: 4,
-  //                           fontFamily: Fonts.arial,
-  //                           color:FitnessColor.white,
-  //                         ),
-  //                       ),
-  //                     ),
-  //
-  //                     Padding(
-  //                       padding:  const EdgeInsets.all(10),
-  //                       child: Card(
-  //                         elevation: 2,
-  //                         child: Container(
-  //                           width: screenSize.width * 0.35,
-  //                           height: screenSize.height * 0.35,
-  //
-  //                           decoration: BoxDecoration(
-  //                            // color: FitnessColor.white,
-  //                             border: Border.all(color: FitnessColor.white),
-  //                             borderRadius: const BorderRadius.all(Radius.circular(10)),
-  //                             image: DecorationImage(
-  //                               image: (
-  //                                   answer.value.image != null &&
-  //                                   answer.value.image!.isNotEmpty)
-  //                                   ? NetworkImage("https://tfbfitness.com/${answer.value.image}")
-  //                                   :  const AssetImage('assets/images/no_image.png')
-  //                               as ImageProvider,
-  //                               fit: BoxFit.fill,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           );
-  //         }).toList(),
-  //       ],
-  //     ),
-  //   );
-  // }
+
 
   Widget _buildPageContent(QuestionList question) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -446,14 +332,16 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                     onTap: () {
                       if (answer.key != null) {
                         setState(() {
-                          selectedValues['${question.id}'] = answer.key!;
+                          // Store the selected value as questionId-answerKey
                           selectedValues['${question.id}'] = answer.key!;
                         });
                       }
-                      print(
-                          "Selected Values: ${selectedValues.values.join(',')}");
-                      print(
-                          "Selected Values for question ${question.id}: ${selectedValues['${question.id}']}");
+                      // Generate the comma-separated string
+                      final selectedString = selectedValues.entries
+                          .map((entry) => '${entry.key}-${entry.value}')
+                          .join(',');
+                      print("Selected Values: $selectedString");
+                      print("Selected Values for question ${question.id}: ${selectedValues['${question.id}']}");
                     },
                     child: Row(
                       children: [
@@ -465,8 +353,7 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                               height: 35,
                               width: 35,
                               fit: BoxFit.contain,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
+                              loadingBuilder: (context, child, loadingProgress) {
                                 if (loadingProgress == null) {
                                   return child;
                                 } else {
@@ -499,8 +386,7 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                                 child: Image.network(
                                   "https://tfbfitness.com/${answer.value!.image}",
                                   fit: BoxFit.cover,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
+                                  loadingBuilder: (context, child, loadingProgress) {
                                     if (loadingProgress == null) {
                                       return child;
                                     } else {
@@ -515,7 +401,12 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                           ),
                       ],
                     ),
-                  )),
+                  )
+
+
+
+
+              ),
             );
           }).toList(),
         ],
@@ -523,12 +414,83 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
     );
   }
 
+  // Widget _buildBottomButtons() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(16.0),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         if (currentPage > 0)
+  //           CustomButton(
+  //             height: 40,
+  //             width: 55,
+  //             text: DemoLocalization.of(context)!.translate('Back').toString(),
+  //             onPressed: () {
+  //               setState(() {
+  //                 currentPage--;
+  //                 _pageController.previousPage(
+  //                   duration: const Duration(milliseconds: 300),
+  //                   curve: Curves.ease,
+  //                 );
+  //               });
+  //             },
+  //             fontFamily: Fonts.arial,
+  //           ),
+  //         if (currentPage < questionController.questionList.length - 1)
+  //           CustomButton(
+  //             height: 40,
+  //             width: 55,
+  //             text: DemoLocalization.of(context)!.translate('Next').toString(),
+  //             onPressed: () {
+  //               if (selectedValues[
+  //                       '${questionController.questionList[currentPage].id}'] !=
+  //                   -1) {
+  //                 setState(() {
+  //                   currentPage++;
+  //                   _pageController.nextPage(
+  //                     duration: const Duration(milliseconds: 300),
+  //                     curve: Curves.ease,
+  //                   );
+  //                 });
+  //               } else {
+  //                 Utils.mySnackBar(
+  //                     title: 'Not Answered!', msg: 'Please select a answer');
+  //               }
+  //             },
+  //             fontFamily: Fonts.arial,
+  //           ),
+  //         if (currentPage == questionController.questionList.length - 1)
+  //           CustomButton(
+  //             height: 40,
+  //             width: 60,
+  //             text:
+  //                 DemoLocalization.of(context)!.translate('Finish').toString(),
+  //             onPressed: () {
+  //               if (selectedValues['${questionController.questionList[currentPage].id}'] != -1) {
+  //                 // Get.to(() => const StartNowSecond());
+  //                // Get.to(() => const ExactScoreTableUI());
+  //                 SharedPref.setQuestionPrefs("25");
+  //                 Get.to(() => const SelectTrainerScreen(questionId: "25"));
+  //
+  //                 //Get.to(() =>  HomeScreen(questionId: selectedValues.values.join(','),));
+  //               }else{
+  //                 Utils.mySnackBar(
+  //                     title: 'Not Answered!', msg: 'Please select a answer');
+  //               }
+  //             },
+  //             fontFamily: Fonts.arial,
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _buildBottomButtons() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Back Button (Only visible on non-first pages)
           if (currentPage > 0)
             CustomButton(
               height: 40,
@@ -544,16 +506,21 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                 });
               },
               fontFamily: Fonts.arial,
-            ),
-          if (currentPage < questionController.questionList.length - 1)
-            CustomButton(
-              height: 40,
-              width: 55,
-              text: DemoLocalization.of(context)!.translate('Next').toString(),
-              onPressed: () {
-                if (selectedValues[
-                        '${questionController.questionList[currentPage].id}'] !=
-                    -1) {
+            )
+          else
+            const SizedBox(width: 55), // Placeholder to maintain alignment
+
+          // Next Button (for all pages except the last) or Finish Button (on the last page)
+          CustomButton(
+            height: 40,
+            width: 55,
+            text: currentPage < questionController.questionList.length - 1
+                ? DemoLocalization.of(context)!.translate('Next').toString()
+                : DemoLocalization.of(context)!.translate('Finish').toString(),
+            onPressed: () {
+              if (selectedValues['${questionController.questionList[currentPage].id}'] != -1) {
+                if (currentPage < questionController.questionList.length - 1) {
+                  // Go to the next page
                   setState(() {
                     currentPage++;
                     _pageController.nextPage(
@@ -562,33 +529,21 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
                     );
                   });
                 } else {
-                  Utils.mySnackBar(
-                      title: 'Not Answered!', msg: 'Please select a answer');
-                }
-              },
-              fontFamily: Fonts.arial,
-            ),
-          if (currentPage == questionController.questionList.length - 1)
-            CustomButton(
-              height: 40,
-              width: 60,
-              text:
-                  DemoLocalization.of(context)!.translate('Finish').toString(),
-              onPressed: () {
-                if (selectedValues['${questionController.questionList[currentPage].id}'] != -1) {
-                  // Get.to(() => const StartNowSecond());
-                 // Get.to(() => const ExactScoreTableUI());
-                  SharedPref.setQuestionPrefs("25");
-                  Get.to(() => const SelectTrainerScreen(questionId: "25"));
+                  // Handle Finish action
+                  final selectedString = selectedValues.entries.map((entry) => '${entry.key}-${entry.value}').join(',');
+                  print("Final Selected String: $selectedString");
 
-                  //Get.to(() =>  HomeScreen(questionId: selectedValues.values.join(','),));
-                }else{
-                  Utils.mySnackBar(
-                      title: 'Not Answered!', msg: 'Please select a answer');
+                  SharedPref.setQuestionPrefs(selectedString);
+                  Get.to(() =>  SelectTrainerScreen(questionId: selectedString));
                 }
-              },
-              fontFamily: Fonts.arial,
-            ),
+              } else {
+                // Show a snack bar if no answer is selected
+                Utils.mySnackBar(
+                    title: 'Not Answered!', msg: 'Please select an answer');
+              }
+            },
+            fontFamily: Fonts.arial,
+          ),
         ],
       ),
     );
@@ -691,3 +646,119 @@ class _QuestionAnswerScreenState extends State<QuestionAnswerScreen> {
     );
   }
 }
+
+/// Build Page Content for Each Question
+// Widget _buildPageContent(QuestionList question) {
+//   bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+//
+//   final Size screenSize = MediaQuery.of(context).size;
+//
+//   return Padding(
+//     padding: const EdgeInsets.all(16.0),
+//     child: ListView(
+//       //crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         // Question text
+//         Card(
+//           color: FitnessColor.colorsociallogintext,
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(10.0),
+//             side: const  BorderSide(
+//               width: 2,
+//               color:  FitnessColor.colorsociallogintext,
+//             ),
+//           ),
+//           elevation: 4,
+//           child:Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 15),
+//             child: CustomText2(text: question.cateName ?? "", fontSize: 5,fontFamily: Fonts.arial,),
+//           ),
+//         ),
+//         const SizedBox(height: 10,),
+//         Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
+//           child: CustomText(text: question.questionText ?? "", fontSize: 4.5,fontFamily: Fonts.arial,color: FitnessColor.white),
+//         ),
+//
+//         ...question.answers.asMap().entries.map((entry) {
+//
+//           Answer answer = entry.value;
+//           return Card(
+//             color: FitnessColor.primary,
+//             margin: const EdgeInsets.symmetric(vertical: 8.0),
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(15.0),
+//               side: BorderSide(
+//                 width: 2,
+//                 color: selectedValues['${question.id}'] == answer.key
+//                     ? Colors.red
+//                     : FitnessColor.colorsociallogintext,
+//               ),
+//             ),
+//             elevation: 4,
+//             child: SizedBox(
+//               height: screenSize.height * 0.17,
+//               child: InkWell(
+//                 onTap: () {
+//
+//                    if(answer.key != null) {
+//
+//                       setState(() {
+//                         selectedValues['${question.id}'] = answer.key!;
+//                       });
+//
+//                   }
+//
+//                   print("Selected Values: ${selectedValues.values.join(',')}");
+//                   print("Selected Values: $entry}");
+//                 },
+//                 child: Row(
+//                   // mainAxisAlignment: MainAxisAlignment.end,
+//                   children: [
+//                     Expanded(
+//                       child: Padding(
+//                         padding: const EdgeInsets.symmetric(horizontal: 10),
+//                         child: CustomText2(
+//                           text: answer.value!.answer ??'' ,
+//                           fontSize: 4,
+//                           fontFamily: Fonts.arial,
+//                           color:FitnessColor.white,
+//                         ),
+//                       ),
+//                     ),
+//
+//                     Padding(
+//                       padding:  const EdgeInsets.all(10),
+//                       child: Card(
+//                         elevation: 2,
+//                         child: Container(
+//                           width: screenSize.width * 0.35,
+//                           height: screenSize.height * 0.35,
+//
+//                           decoration: BoxDecoration(
+//                            // color: FitnessColor.white,
+//                             border: Border.all(color: FitnessColor.white),
+//                             borderRadius: const BorderRadius.all(Radius.circular(10)),
+//                             image: DecorationImage(
+//                               image: (
+//                                   answer.value.image != null &&
+//                                   answer.value.image!.isNotEmpty)
+//                                   ? NetworkImage("https://tfbfitness.com/${answer.value.image}")
+//                                   :  const AssetImage('assets/images/no_image.png')
+//                               as ImageProvider,
+//                               fit: BoxFit.fill,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           );
+//         }).toList(),
+//       ],
+//     ),
+//   );
+// }

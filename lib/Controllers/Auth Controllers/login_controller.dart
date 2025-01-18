@@ -100,7 +100,7 @@ class LoginController extends GetxController {
         Utils.mySnackBar(
           msg: response["message"]
         );
-        Get.to(()=>const SelectTrainerScreen());
+        Get.to(()=>const QuestionAnswerScreen());
       }
     }finally {
       Future.delayed(const Duration(seconds: 3), () {
